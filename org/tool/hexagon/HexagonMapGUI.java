@@ -364,7 +364,7 @@ public class HexagonMapGUI {
         Hexagon getNode(double x, double y) {
             int tx = (int) ((x) / ((outR * 1.5)));
             int ty = (int) ((y) / ((innerR * 2)));
-            if (tx >= map.length || ty >= map[0].length) {
+            if (tx > map.length || ty > map[0].length) {
                 return null;
             }
             int x1 = Math.max(0, tx - 1);
@@ -378,7 +378,7 @@ public class HexagonMapGUI {
                     }
                 }
             }
-            return map[tx][ty];
+            return map[Math.min(tx, map.length - 1)][Math.min(ty, map[0].length - 1)];
         }
 
     }
