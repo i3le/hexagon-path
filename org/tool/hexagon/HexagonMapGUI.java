@@ -22,7 +22,7 @@ import javax.swing.JTextField;
  */
 public class HexagonMapGUI {
 
-    private static final Color COLOR_CLEAR = new Color(0, 0, 0);
+    private static final Color COLOR_G2D = new Color(0, 0, 0);
 
     private static final Color COLOR_OPEN = new Color(233, 157, 101);
     private static final Color COLOR_CLOSE = new Color(123, 70, 188);
@@ -34,7 +34,7 @@ public class HexagonMapGUI {
     private static final Color COLOR_SLOW = new Color(0, 255, 0);
     private static final Color COLOR_NORMAL = new Color(255, 255, 0);
 
-    private Hexagon[][] map = new Hexagon[108][46];
+    private Hexagon[][] map = new Hexagon[64][40];
     private Random random = new Random();
 
     private JFrame frame;
@@ -48,6 +48,7 @@ public class HexagonMapGUI {
         EventQueue.invokeLater(() -> {
             try {
                 HexagonMapGUI window = new HexagonMapGUI();
+                window.frame.setLocationRelativeTo(null);
                 window.frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -61,7 +62,8 @@ public class HexagonMapGUI {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(10, 10, 1900, 1020);
+        frame.setResizable(false);
+        frame.setBounds(10, 10, 1260, 930);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
@@ -126,7 +128,7 @@ public class HexagonMapGUI {
         onX2.run();
 
         canvas = new TileCanvas();
-        canvas.setBounds(33, 33, 1960, 970);
+        canvas.setBounds(45, 35, 1160, 847);
         canvas.setBackground(new Color(244, 244, 244));
         frame.getContentPane().add(canvas);
 
@@ -294,12 +296,14 @@ public class HexagonMapGUI {
 
         public void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setColor(COLOR_CLEAR);
+            g2d.setColor(COLOR_G2D);
             g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
+            int maxx = Math.min (map.length, (int) (this.getWidth() / (outR * 1.5)));
+            int maxy =  Math.min (map[0].length, (int) (this.getHeight() / (innerR * 2)));
             // 画地图
-            for (int i = 0; i < map.length; i++) {
-                for (int j = 0; j < map[i].length; j++) {
+            for (int i = 0; i < maxx; i++) {
+                for (int j = 0; j < maxy; j++) {
                     Hexagon node = map[i][j];
                     switch (node.speed) {
                         case 0:
@@ -337,15 +341,15 @@ public class HexagonMapGUI {
             drawNode(g2d, begin, COLOR_POINT);
             drawNode(g2d, end, COLOR_POINT);
 
-//            drawNear(g2d,map.length / 2, map[0].length / 2);
+//            drawNear(g2d, begin);
+//            drawNear(g2d, end);
         }
 
-//        void drawNear(Graphics2D g2d, int mx, int my) {
-//            Hexagon node = new Hexagon(mx, my);
+//        void drawNear(Graphics2D g2d, Hexagon node) {
 //            drawNode(g2d, node, new Color(255, 81, 185));
 //            List<Hexagon> nears = node.findNear();
 //            for (Hexagon near : nears) {
-//                drawNode(g2d, near, new Color(206, 89, 255));
+//                drawNode(g2d, hPath.find(near), new Color(206, 89, 255));
 //            }
 //        }
 
