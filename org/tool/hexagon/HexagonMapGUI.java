@@ -48,7 +48,8 @@ public class HexagonMapGUI {
     private TileCanvas canvas;
     private JTextField txtX1, txtY1, txtX2, txtY2;
 
-    private JTextField curX, curY;
+    // 当前操作的点（起点或终点）
+    private JTextField setX, setY;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -110,8 +111,8 @@ public class HexagonMapGUI {
         Runnable onX1 = () -> {
             lblX1.setForeground(Color.RED);
             lblX2.setForeground(Color.BLACK);
-            curX = txtX1;
-            curY = txtY1;
+            setX = txtX1;
+            setY = txtY1;
         };
         lblX1.addMouseListener(new MouseAdapter() {
             @Override
@@ -122,8 +123,8 @@ public class HexagonMapGUI {
         Runnable onX2 = () -> {
             lblX2.setForeground(Color.RED);
             lblX1.setForeground(Color.BLACK);
-            curX = txtX2;
-            curY = txtY2;
+            setX = txtX2;
+            setY = txtY2;
         };
         lblX2.addMouseListener(new MouseAdapter() {
             @Override
@@ -139,6 +140,15 @@ public class HexagonMapGUI {
         frame.getContentPane().add(canvas);
 
         x += 80;
+        JButton btnNear = new JButton("附近的点");
+        btnNear.addActionListener(e -> {
+            canvas.path = null;
+            canvas.repaint();
+        });
+        btnNear.setBounds(x, y, 100, 25);
+        frame.getContentPane().add(btnNear);
+
+        x += 110;
         JButton btnFind = new JButton("开始寻路");
         btnFind.addActionListener(e -> {
             canvas.findPath();
@@ -148,10 +158,10 @@ public class HexagonMapGUI {
         frame.getContentPane().add(btnFind);
 
         x += 110;
-        JButton btnRandom = new JButton("随机寻路");
+        JButton btnRandom = new JButton("随机路点");
         btnRandom.addActionListener(e ->{
-            txtX2.setText(String.valueOf(random.nextInt(map.length)));
-            txtY2.setText(String.valueOf(random.nextInt(map[0].length)));
+            setX.setText(String.valueOf(random.nextInt(map.length)));
+            setY.setText(String.valueOf(random.nextInt(map[0].length)));
             canvas.findPath();
             canvas.repaint();
         });
@@ -202,8 +212,8 @@ public class HexagonMapGUI {
         onMouseLoc(e);
         Hexagon node = canvas.getNode(e.getX(), e.getY());
         if (node != null) {
-            curX.setText(String.valueOf(node.x));
-            curY.setText(String.valueOf(node.y));
+            setX.setText(String.valueOf(node.x));
+            setY.setText(String.valueOf(node.y));
         }
         canvas.findPath();
         canvas.repaint();
@@ -332,8 +342,6 @@ public class HexagonMapGUI {
                 }
             }
 
-            System.out.println("地图画好啦~");
-
             if (path != null) {
                 for (Hexagon node : hPath.openList) {
                     drawNode(g2d, node, COLOR_OPEN);
@@ -344,24 +352,24 @@ public class HexagonMapGUI {
                 for (Hexagon node : path) {
                     drawNode(g2d, node, COLOR_PATH);
                 }
+                System.out.println("路径画好啦~");
+            } else {
+                drawNear(g2d, begin);
+                drawNear(g2d, end);
             }
-
-            System.out.println("路径画好啦~");
 
             drawNode(g2d, begin, COLOR_POINT);
             drawNode(g2d, end, COLOR_POINT);
 
-//            drawNear(g2d, begin);
-//            drawNear(g2d, end);
         }
 
-//        void drawNear(Graphics2D g2d, Hexagon node) {
-//            drawNode(g2d, node, new Color(255, 81, 185));
-//            List<Hexagon> nears = node.findNear();
-//            for (Hexagon near : nears) {
-//                drawNode(g2d, hPath.find(near), new Color(206, 89, 255));
-//            }
-//        }
+        void drawNear(Graphics2D g2d, Hexagon node) {
+            drawNode(g2d, node, new Color(255, 81, 185));
+            List<Hexagon> nears = node.findNear();
+            for (Hexagon near : nears) {
+                drawNode(g2d, hPath.find(near), new Color(206, 89, 255));
+            }
+        }
 
         void drawNode(Graphics2D g2d, Hexagon node, Color color) {
             if(node == null || node.x > this.getWidth() / (outR * 1.5) || node.y > this.getHeight() / (innerR * 2)) {
