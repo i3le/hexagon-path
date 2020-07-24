@@ -22,6 +22,12 @@ import javax.swing.JTextField;
  */
 public class HexagonMapGUI {
 
+    // 根据分类定义速度（值越小耗时越少，值越大耗时越多）
+    private static final int SPEED_BLOCK    = 0;
+    private static final int SPEED_FAST     = 5;
+    private static final int SPEED_NORMAL   = 10;
+    private static final int SPEED_SLOW     = 15;
+
     private static final Color COLOR_G2D = new Color(0, 0, 0);
 
     private static final Color COLOR_OPEN = new Color(233, 157, 101);
@@ -31,8 +37,8 @@ public class HexagonMapGUI {
 
     private static final Color COLOR_BLOCK = new Color(0, 0, 0);
     private static final Color COLOR_FAST = new Color(222, 255, 222);
-    private static final Color COLOR_SLOW = new Color(0, 255, 0);
-    private static final Color COLOR_NORMAL = new Color(255, 255, 0);
+    private static final Color COLOR_SLOW = new Color(255, 255, 0);
+    private static final Color COLOR_NORMAL = new Color(0, 255, 0);
 
     private Hexagon[][] map = new Hexagon[64][40];
     private Random random = new Random();
@@ -238,7 +244,7 @@ public class HexagonMapGUI {
                     gp.closePath();
                     node.gp = gp;
 
-                    node.speed = 10;
+                    node.speed = SPEED_NORMAL;
                     map[i][j] = node;
                 }
             }
@@ -248,7 +254,7 @@ public class HexagonMapGUI {
                 for (int j = 0; j < map[i].length; j++) {
                     Hexagon node = map[i][j];
                     if (random.nextFloat() < 0.2) {
-                        node.speed = 0;
+                        node.speed = SPEED_BLOCK;
                         node.isBlock = true;
                     }
                 }
@@ -259,7 +265,7 @@ public class HexagonMapGUI {
                 for (int j = 0; j < map[i].length; j++) {
                     Hexagon node = map[i][j];
                     if (random.nextFloat() < 0.4) {
-                        node.speed = 15;
+                        node.speed = SPEED_SLOW;
                         node.isBlock = false;
                     }
                 }
@@ -268,12 +274,12 @@ public class HexagonMapGUI {
             int y1 = random.nextInt(sizeY);
             int y2 = random.nextInt(sizeY);
             int y3 = random.nextInt(sizeY);
-            // 快速点
+            // 快进点
             for (int i = 0; i < map.length; i++) {
                 for (int j = 0; j < map[i].length; j++) {
                     Hexagon node = map[i][j];
                     if (node.y == y1 || node.x == y1 || node.y == y2 || node.x == y2 || node.y == y3) {
-                        node.speed = 5;
+                        node.speed = SPEED_FAST;
                         node.isBlock = false;
                     }
                 }
@@ -306,17 +312,21 @@ public class HexagonMapGUI {
                 for (int j = 0; j < maxy; j++) {
                     Hexagon node = map[i][j];
                     switch (node.speed) {
-                        case 0:
+                        case SPEED_BLOCK:
                             drawNode(g2d, node, COLOR_BLOCK);
                             continue;
-                        case 5:
+                        case SPEED_FAST:
                             drawNode(g2d, node, COLOR_FAST);
                             continue;
-                        case 15:
+                        case SPEED_SLOW:
                             drawNode(g2d, node, COLOR_SLOW);
                             continue;
-                        default:
-                            drawNode(g2d, node, COLOR_NORMAL);
+                        case SPEED_NORMAL:
+                            if(node.isBlock) {
+                                drawNode(g2d, node, COLOR_BLOCK);
+                            } else {
+                                drawNode(g2d, node, COLOR_NORMAL);
+                            }
                             continue;
                     }
                 }
