@@ -14,6 +14,7 @@ public class HexagonPath {
     private Hexagon[][] map;
     private LinkedList<Hexagon> path;
 
+	public int depth = 5000;    // 算法深度
 
     public HexagonPath(Hexagon[][] map) {
         this.map = map;
@@ -36,7 +37,7 @@ public class HexagonPath {
         return map[mx][my];
     }
 
-    public List<Hexagon> start(Hexagon begin, Hexagon end) {
+    public List<Hexagon> findPath(Hexagon begin, Hexagon end) {
         Hexagon src = find(begin);
         Hexagon dest = find(end);
         if (src == null || dest == null) {
@@ -66,7 +67,7 @@ public class HexagonPath {
 
         boolean isFind = makeOne(src, dest);
         long count = 0;
-        while (isFind == false && openList.size() > 0) {
+        while (isFind == false && openList.size() > 0 && count < depth) {
             count++;
             Hexagon minNode = getMinFNode();
             if (minNode != null) {

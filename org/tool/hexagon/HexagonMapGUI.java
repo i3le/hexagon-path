@@ -62,12 +62,12 @@ public class HexagonMapGUI {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setResizable(false);
         frame.setBounds(10, 10, 1260, 930);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
+        frame.setResizable(false);
 
-        int x = 100, y = 4;
+        int x = 100, y = 5;
         JLabel lblX1 = new JLabel("起点");
         lblX1.setBounds(x, y, 30, 25);
         frame.getContentPane().add(lblX1);
@@ -287,7 +287,7 @@ public class HexagonMapGUI {
             begin = hPath.find(Integer.valueOf(txtX1.getText()), Integer.valueOf(txtY1.getText()));
             end = hPath.find(Integer.valueOf(txtX2.getText()), Integer.valueOf(txtY2.getText()));
             long startTime = System.currentTimeMillis();
-            path = hPath.start(begin, end);
+            path = hPath.findPath(begin, end);
             System.out.println("find path use " + (System.currentTimeMillis() - startTime) + "ms");
             if (path == null) {
                 System.out.println("无法通过！");
@@ -354,6 +354,9 @@ public class HexagonMapGUI {
 //        }
 
         void drawNode(Graphics2D g2d, Hexagon node, Color color) {
+            if(node == null || node.x > this.getWidth() / (outR * 1.5) || node.y > this.getHeight() / (innerR * 2)) {
+                return;
+            }
             Color temp = g2d.getColor();
             g2d.setColor(color);
             g2d.fill(node.gp);
