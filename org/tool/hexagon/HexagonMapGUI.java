@@ -195,22 +195,25 @@ public class HexagonMapGUI {
             }
             @Override
             public void mouseMoved(MouseEvent e) {
-                onMouseLoc(e);
+            	Hexagon node = onMouseNode(e);
+				if (canvas.mouse != node) {
+					canvas.mouse = node;
+					canvas.repaint();
+				}
             }
         });
     }
 
-    private void onMouseLoc(MouseEvent e) {
-        Hexagon node = canvas.getNode(e.getX(), e.getY());
-        if (node == null) {
-            node = new Hexagon(0, 0);
-        }
-        lblMouse.setText(String.format("(%s, %s) (%s, %s)", e.getX(), e.getY(), node.x, node.y));
-    }
+	private Hexagon onMouseNode(MouseEvent e) {
+		Hexagon node = canvas.getNode(e.getX(), e.getY());
+		if (node != null) {
+			lblMouse.setText(String.format("(%s, %s) (%s, %s)", e.getX(), e.getY(), node.x, node.y));
+		}
+		return node;
+	}
 
     private void onMouseEvent(MouseEvent e) {
-        onMouseLoc(e);
-        Hexagon node = canvas.getNode(e.getX(), e.getY());
+        Hexagon node = onMouseNode(e);;
         if (node != null) {
             setX.setText(String.valueOf(node.x));
             setY.setText(String.valueOf(node.y));
@@ -220,8 +223,9 @@ public class HexagonMapGUI {
     }
 
     public class TileCanvas extends JPanel {
-
-        double outR = 12;
+		private static final long serialVersionUID = 8127261336405853104L;
+		
+		double outR = 12;
         double innerR = outR / 2 * Math.sqrt(3);
 
         HexagonPath hPath = new HexagonPath(map);
@@ -297,7 +301,7 @@ public class HexagonMapGUI {
             findPath();
         }
 
-        Hexagon begin, end;
+        Hexagon begin, end, mouse;
         List<Hexagon> path;
         public void findPath() {
             begin = hPath.find(Integer.valueOf(txtX1.getText()), Integer.valueOf(txtY1.getText()));
@@ -361,6 +365,9 @@ public class HexagonMapGUI {
             drawNode(g2d, begin, COLOR_POINT);
             drawNode(g2d, end, COLOR_POINT);
 
+			if (mouse != null) {
+				drawNode(g2d, mouse, COLOR_POINT);
+			}
         }
 
         void drawNear(Graphics2D g2d, Hexagon node) {
