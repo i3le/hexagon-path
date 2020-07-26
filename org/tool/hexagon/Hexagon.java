@@ -1,6 +1,5 @@
 package org.tool.hexagon;
 
-import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +17,6 @@ public class Hexagon {
     public int G;
     public int H;
     public Hexagon parent;
-
-    public GeneralPath gp;
 
     public Hexagon(int x, int y) {
         this.x = x;

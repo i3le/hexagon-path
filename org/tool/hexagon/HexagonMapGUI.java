@@ -11,6 +11,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.util.List;
 import java.util.Random;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,7 +41,11 @@ public class HexagonMapGUI {
     private static final Color COLOR_SLOW = new Color(255, 255, 0);
     private static final Color COLOR_NORMAL = new Color(0, 255, 0);
 
-    private Hexagon[][] map = new Hexagon[64][40];
+    private static final int W = 64;	// 横
+    private static final int H = 40;	// 竖
+    
+    private Hexagon[][] map = new Hexagon[W][H];
+    private GeneralPath[][] gpmap = new GeneralPath[W][H];
     private Random random = new Random();
 
     private JFrame frame;
@@ -237,6 +242,9 @@ public class HexagonMapGUI {
             for (int i = 0; i < map.length; i++) {
                 for (int j = 0; j < map[i].length; j++) {
                     Hexagon node = new Hexagon(i, j);
+                    node.speed = SPEED_NORMAL;
+                    map[i][j] = node;
+                    
                     double x = outR + node.x * (outR * 1.5);
                     double y = outR + node.y * (innerR * 2);
                     if (node.x % 2 == 1) {
@@ -256,10 +264,7 @@ public class HexagonMapGUI {
                     gp.lineTo(x5, y5);
                     gp.lineTo(x6, y6);
                     gp.closePath();
-                    node.gp = gp;
-
-                    node.speed = SPEED_NORMAL;
-                    map[i][j] = node;
+                    gpmap[i][j] = gp;
                 }
             }
 
@@ -382,11 +387,12 @@ public class HexagonMapGUI {
             if(node == null || node.x > this.getWidth() / (outR * 1.5) || node.y > this.getHeight() / (innerR * 2)) {
                 return;
             }
+            GeneralPath gp = gpmap[node.x][node.y];
             Color temp = g2d.getColor();
             g2d.setColor(color);
-            g2d.fill(node.gp);
+            g2d.fill(gp);
             g2d.setColor(temp);
-            g2d.draw(node.gp);
+            g2d.draw(gp);
         }
 
         Hexagon getNode(double x, double y) {
@@ -401,7 +407,7 @@ public class HexagonMapGUI {
             int y2 = Math.min(map[0].length, ty + 1);
             for (int i = x1; i < x2; i++) {
                 for (int j = y1; j < y2; j++) {
-                    if (map[i][j].gp.contains(x, y)) {
+                    if (gpmap[i][j].contains(x, y)) {
                         return map[i][j];
                     }
                 }
